@@ -492,6 +492,11 @@ rt_thread_t rt_thread_create(const char *name,
     if (thread == RT_NULL)
         return RT_NULL;
 
+#ifdef __ISA_NATIVE__
+    const rt_uint32_t stack_size_min = 0x8000;
+    if (stack_size < stack_size_min) stack_size = stack_size_min;
+#endif
+
     stack_start = (void *)RT_KERNEL_MALLOC(stack_size);
     if (stack_start == RT_NULL)
     {
@@ -1159,5 +1164,10 @@ rt_err_t rt_thread_get_name(rt_thread_t thread, char *name, rt_uint8_t name_size
     return (thread == RT_NULL) ? -RT_EINVAL : rt_object_get_name(&thread->parent, name, name_size);
 }
 RTM_EXPORT(rt_thread_get_name);
+
+void rt_thread_exit(void) {
+  _thread_exit();
+}
+RTM_EXPORT(rt_thread_exit);
 
 /**@}*/
